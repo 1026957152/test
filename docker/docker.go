@@ -11,7 +11,7 @@ import (
 
 func NewClient() {
 
-	defer func (){
+	defer func() {
 		fmt.Println("Mqqt 找值，defer end...")
 	}()
 	defer func() {
@@ -34,33 +34,29 @@ func NewClient() {
 	}
 	io.Copy(os.Stdout, reader)
 
-
-/*	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image: "alpine",
-		Cmd:   []string{"echo", "hello world"},
-	}, nil, nil, "")
-	if err != nil {
-		panic(err)
-	}
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		panic(err)
-	}
-
-	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
-	select {
-	case err := <-errCh:
+	/*	resp, err := cli.ContainerCreate(ctx, &container.Config{
+			Image: "alpine",
+			Cmd:   []string{"echo", "hello world"},
+		}, nil, nil, "")
 		if err != nil {
 			panic(err)
 		}
-	case <-statusCh:
-	}
-	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: true})
-	if err != nil {
-		panic(err)
-	}
+		if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+			panic(err)
+		}
 
-	stdcopy.StdCopy(os.Stdout, os.Stderr, out)*/
+		statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
+		select {
+		case err := <-errCh:
+			if err != nil {
+				panic(err)
+			}
+		case <-statusCh:
+		}
+		out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: true})
+		if err != nil {
+			panic(err)
+		}
+
+		stdcopy.StdCopy(os.Stdout, os.Stderr, out)*/
 }
-
-
-

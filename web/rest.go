@@ -1,12 +1,11 @@
-
 package web
 
 import (
 	"encoding/json"
+	"fmt"
+	"html"
+	"log"
 	"net/http"
-"fmt"
-"html"
-"log"
 	"sync"
 )
 
@@ -36,26 +35,27 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, _ := json.Marshal(status)
-	fmt.Fprintf(w, "Form[%q] = %q\n", "Status",string(data))
-
+	fmt.Fprintf(w, "Form[%q] = %q\n", "Status", string(data))
 
 	//fmt.Fprintf(w, "URL.Path = %q\n", r.URL.Path)
 	//...
 }
+
 var status map[string]string
-func Webserver(Wg *sync.WaitGroup,status_ map[string]string) {
+
+func Webserver(Wg *sync.WaitGroup, status_ map[string]string) {
 	status = status_
 
 	Wg.Add(1)
 	var thingName string = "Led"
-	var  region string  = "us-west-2"
+	var region string = "us-west-2"
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprintln(writer, "Hello, ", html.EscapeString(request.URL.Path))
 	})
 	http.HandleFunc("/about", aboutHandler)
 	log.Printf("开启web 服务 $v")
 
-	log.Fatal(http.ListenAndServe(":8080",nil))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 
 	log.Printf("web 服务已经起来")
 	p := &Product{}
@@ -72,8 +72,3 @@ func Webserver(Wg *sync.WaitGroup,status_ map[string]string) {
 func main() {
 	//Webserver(nil)
 }
-
-
-
-
-

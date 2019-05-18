@@ -7,7 +7,6 @@ import (
 	"time"
 )
 
-
 const (
 	GreenLedPin1 uint8 = 21
 	GreenLedPin2 uint8 = 22
@@ -22,8 +21,8 @@ const (
 	RedLedPin3 uint8 = 12
 )
 
-
 type CallBackPubGreenLedStatus func(interface{})
+
 var PubGreenLedStatus CallBackPubGreenLedStatus
 
 func Start() {
@@ -34,9 +33,9 @@ func Start() {
 	rpio.Open()
 	defer rpio.Close()
 
-	go goDancingGreenLed()// subscribing routine
-	go goDancingBlueLed() // subscribing routine
-	go goStillRedLed()    // publishing routine
+	go goDancingGreenLed() // subscribing routine
+	go goDancingBlueLed()  // subscribing routine
+	go goStillRedLed()     // publishing routine
 
 	blockForever()
 }

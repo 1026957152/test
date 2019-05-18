@@ -1,5 +1,3 @@
-
-
 package docker
 
 /*func CreateNewContainer(image string) (string, error) {
@@ -38,4 +36,3 @@ package docker
 }
 
 */
-

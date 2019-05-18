@@ -1,10 +1,11 @@
 package camera
 
-
 import (
-"gocv.io/x/gocv"
+	"gocv.io/x/gocv"
 )
+
 var flag bool = false
+
 func Newcamera() {
 
 	if flag {
@@ -32,6 +33,3 @@ func main() {
 		window.WaitKey(1)
 	}
 }
-
-
-

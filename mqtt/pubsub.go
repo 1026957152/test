@@ -1,13 +1,11 @@
 package mqtt
 
 import (
-	"camera"
-	"docker"
 	"encoding/json"
-	"execC"
 	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
+	"test"
 	//	"log"
 	"strings"
 	//gpio "test/src"
@@ -21,6 +19,7 @@ var Uplink_Messages = "<AppID>/devices/<DevID>/up"
 var Downlink_Messages = "<AppID>/devices/<DevID>/down"
 
 var knt int
+
 /*func Init() {
 
 	fmt.Println("pubsub : Raspberry Pi Pub/Sub initializing...")
@@ -66,9 +65,7 @@ var knt int
 
 //}
 
-
 func main_mqtt_local() {
-
 
 	knt = 0
 
@@ -83,9 +80,6 @@ func main_mqtt_local() {
 		panic(token.Error())
 	}
 
-
-
-
 	if token := c.Subscribe("plain/led/status/green", 0, nil); token.Wait() &&
 		token.Error() != nil {
 
@@ -93,27 +87,21 @@ func main_mqtt_local() {
 		os.Exit(1)
 	}
 
-
 	var message map[string]string = make(map[string]string)
 	message[""] = "aa"
 
 	tokenPub := c.Publish("plain/led/status/green", 0, false, "aaaaaaaaaaaa")
 	tokenPub.Wait()
 
-
 	time.Sleep(3 * time.Second)
 
-
-
-
 } //
-func New_mqtt(appID string,status map[string]string,server string) {
-
+func New_mqtt(appID string, status map[string]string, server string) {
 
 	var deviceId string = status["deviceEui"]
-	log.Printf("9999999999999 %s-------%s",appID,deviceId)
+	log.Printf("9999999999999 %s-------%s", appID, deviceId)
 
-	defer func (){
+	defer func() {
 		fmt.Println("Mqqt 找值，defer end...")
 	}()
 	defer func() {
@@ -124,7 +112,7 @@ func New_mqtt(appID string,status map[string]string,server string) {
 	}()
 
 	var thingName string = "Led"
-	var  region string  = "us-west-2"
+	var region string = "us-west-2"
 
 	opts := MQTT.NewClientOptions().AddBroker(server)
 	opts.SetClientID("mac-go")
@@ -139,18 +127,11 @@ func New_mqtt(appID string,status map[string]string,server string) {
 		panic(token.Error())
 	}
 
-
-
-
 	//
-	r := strings.NewReplacer("<DevID>",deviceId,"<AppID>",appID);
-
-
-
-
+	r := strings.NewReplacer("<DevID>", deviceId, "<AppID>", appID)
 
 	rt := r.Replace(Downlink_Messages)
-	log.Printf("%s",rt)
+	log.Printf("%s", rt)
 	if token := c.Subscribe(rt, 0, subscribeHandler); token.Wait() &&
 		token.Error() != nil {
 		fmt.Println(token.Error())
@@ -158,11 +139,8 @@ func New_mqtt(appID string,status map[string]string,server string) {
 
 	}
 
-
-
-
 	rt = r.Replace("<AppID>/devices/<DevID>/events/activations/errors")
-	log.Printf("%s",rt)
+	log.Printf("%s", rt)
 	//Downlink Messages
 	if token := c.Subscribe(rt, 0, nil); token.Wait() &&
 		token.Error() != nil {
@@ -170,76 +148,62 @@ func New_mqtt(appID string,status map[string]string,server string) {
 		os.Exit(1)
 	}
 
-
 	//Uplink Messages
-/*	tokenPub := c.Publish(r.Replace("<AppID>/devices/<DevID>/up"), 0, false, "aaaaaaaaaaaa")
-	tokenPub.Wait()*/
+	/*	tokenPub := c.Publish(r.Replace("<AppID>/devices/<DevID>/up"), 0, false, "aaaaaaaaaaaa")
+		tokenPub.Wait()*/
 	//Uplink Messages
-
 
 	ticker := time.NewTicker(10 * time.Second)
 	quit := make(chan struct{})
 	go func() {
 		for {
 			select {
-			case <- ticker.C:
+			case <-ticker.C:
 				// do stuff
 				rt = r.Replace(Uplink_Messages)
-				log.Printf("%s",rt)
+				log.Printf("%s", rt)
 
-				log.Printf("发送信息 %s",rt)
+				log.Printf("发送信息 %s", rt)
 				var message map[string]string = make(map[string]string)
 				message["aaa"] = "aa"
 				messageJson, _ := json.Marshal(status)
 
 				tokenPub := c.Publish(r.Replace(rt), 0, false, string(messageJson))
 				tokenPub.Wait()
-				log.Printf("完成发送信息 %s",rt)
+				log.Printf("完成发送信息 %s", rt)
 
-			case <- quit:
+			case <-quit:
 				ticker.Stop()
 				return
 			}
 		}
 	}()
 
-
 	//
 	/*    tokenPub := c.Publish("<AppID>/devices/<DevID>/events/activations", 0, false, "aaaaaaaaaaaa")
 	      tokenPub.Wait()*/
-
-
-
-
 
 	log.Printf(" 结束mqtt 初始化")
 
 	time.Sleep(3 * time.Second)
 
-
-
 } //
 
 var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
 	fmt.Printf("MSG: %s\n", msg.Payload())
-	text:= fmt.Sprintf("this is result msg #%d!", knt)
+	text := fmt.Sprintf("this is result msg #%d!", knt)
 	knt++
 	token := client.Publish("nn/result", 0, false, text)
 	token.Wait()
 }
 
-
-
-
-
-func register (client MQTT.Client, msg MQTT.Message) {
+func register(client MQTT.Client, msg MQTT.Message) {
 	fmt.Printf("MSG: %s\n", msg.Payload())
-	text:= fmt.Sprintf("this is result msg #%d!", knt)
+	text := fmt.Sprintf("this is result msg #%d!", knt)
 	knt++
 	token := client.Publish("nn/result", 0, false, text)
 	token.Wait()
 }
-
 
 var subscribeHandler MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
 
@@ -249,35 +213,33 @@ var subscribeHandler MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Mes
 	//text:= fmt.Sprintf("this is result msg #%d!", knt)
 	knt++
 	var m map[string]string
-	json.Unmarshal(msg.Payload(),&m)
-
+	json.Unmarshal(msg.Payload(), &m)
 
 	fmt.Printf("MSG: %s\n", m)
 
 	if m["command"] == "camera" {
 		fmt.Printf("LIGHT ON 打开灯啊啊啊\n")
-		camera.Newcamera()
+		test.Newcamera()
 	}
 
 	if m["command"] == "docker" {
 		fmt.Printf("LIGHT ON 打开灯啊啊啊\n")
-		docker.NewClient()
+		test.NewClient()
 	}
 	if m["command"] == "scream" {
 		fmt.Printf("LIGHT ON 打开灯啊啊啊\n")
-		camera.Newcamera()
+		test.Newcamera()
 	}
 
 	if m["command"] == "chroma" {
 		fmt.Printf("LIGHT ON 打开灯啊啊啊\n")
 
-		camera.Newcamera()
+		test.Newcamera()
 
-		execC.Chrome_on()
-		execC.Chrome_off()
+		test.Chrome_on()
+		test.Chrome_off()
 
 	}
 	/*	token := client.Publish("nn/result", 0, false, text)
 		token.Wait()*/
 }
-
