@@ -1,0 +1,48 @@
+#!/bin/bash
+gw_4g=192.168.8.1
+gw_vlan=192.168.41.254
+gw_service=183.232.231.173
+
+route del default
+route add default gw $gw_vlan
+
+#添加gw_service的靜态路由
+route del -host $gw_service
+route add -host $gw_service gw $gw_vlan
+
+while true
+do
+    gw_curr=$(ip route show |grep default |awk '{print $3}')
+
+    if ping -c 1 $gw_service >/dev/null 2>&1;
+    then
+        echo "connected"
+        if test $gw_curr = $gw_vlan
+        then
+            echo 'gw_vlan ->do nothing.'
+        else
+            echo 'gw_4g -> set gw_vlan'
+            route del default gw $gw_4g
+            route add default gw $gw_vlan
+        fi
+    else
+        echo "unconnected";
+                if test $gw_curr = $gw_4g
+                then
+            echo 'gw_4g ->do nothing.'
+        else
+            echo 'gw_vlan -> set gw_4g'
+            route del default gw $gw_vlan
+            route add default gw $gw_4g
+        fi
+    fi
+done
+
+
+
+
+[APP]
+updatefx_url = http://localhost:8002/update/AppUpdateFX.xml
+release
+version
+licenseVersion
