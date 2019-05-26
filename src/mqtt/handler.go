@@ -3,11 +3,11 @@ package mqtt
 import (
 	//"camera"
 	"encoding/json"
-	"execC"
 	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"strings"
-	"update"
+	"test/src/execC"
+	"test/src/update"
 )
 
 var SubscribeHandler MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {

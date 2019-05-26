@@ -2,13 +2,14 @@ package main
 
 import (
 	"bytes"
-	"camera"
-	"config"
-	"docker"
 	"errors"
-	"mqtt"
-	"qrcode"
 	"strings"
+	"test/src/camera"
+	"test/src/config"
+	"test/src/docker"
+	"test/src/mqtt"
+	"test/src/qrcode"
+	//"test"
 
 	/*	"qrcode"
 		"strings"*/
@@ -22,7 +23,7 @@ import (
 	"net"
 
 	"sync"
-	"web"
+	"test/src/web"
 )
 
 var ERR_EOF = errors.New("EOF")
