@@ -53,6 +53,12 @@ func Webserver(Wg *sync.WaitGroup, status_ map[string]string) {
 		fmt.Fprintln(writer, "Hello, ", html.EscapeString(request.URL.Path))
 	})
 	http.HandleFunc("/about", aboutHandler)
+	http.HandleFunc("/info", func(writer http.ResponseWriter, request *http.Request) {
+
+		data, _ := json.Marshal(status)
+		fmt.Fprintln(writer, string(data))
+	})
+
 	log.Printf("开启web 服务 $v")
 
 	log.Fatal(http.ListenAndServe(":8080", nil))

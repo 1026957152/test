@@ -12,7 +12,7 @@ package serial
 import (
 	"bytes"
 	"fmt"
-
+	//"github.com/karalabe/hid"
 	//"flag"
 	"github.com/larspensjo/config"
 	"github.com/tarm/goserial"
@@ -53,6 +53,8 @@ func getMacAddr() (addr string) {
 	return
 }
 func main() {
+	//hid.Supported()
+
 	addr := getMacAddr()
 	log.Printf("读取窗口信息 %s", addr)
 

@@ -9,8 +9,9 @@ import (
 	"os"
 )
 
-func NewClient() {
+func NewClient(imageName string) {
 
+	//"docker.io/library/alpine"
 	defer func() {
 		fmt.Println("Mqqt 找值，defer end...")
 	}()
@@ -28,7 +29,7 @@ func NewClient() {
 	}
 	cli.NegotiateAPIVersion(ctx)
 
-	reader, err := cli.ImagePull(ctx, "docker.io/library/alpine", types.ImagePullOptions{})
+	reader, err := cli.ImagePull(ctx, imageName, types.ImagePullOptions{})
 	if err != nil {
 		panic(err)
 	}

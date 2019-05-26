@@ -1,11 +1,28 @@
-package test
+package main
 
 import (
 	"bytes"
+	"camera"
+	"config"
+	"docker"
 	"errors"
+	"mqtt"
+	"qrcode"
+	"strings"
+
+	/*	"qrcode"
+		"strings"*/
+
+	/*	"fmt"
+		"io"
+		"net/http"
+		"os"*/
 	"log"
+	//"mqtt"
 	"net"
+
 	"sync"
+	"web"
 )
 
 var ERR_EOF = errors.New("EOF")
@@ -45,14 +62,30 @@ func (self *AgentContext) CheckHostType(host_type string) error {
 }*/
 
 var Wg sync.WaitGroup
+var status = make(map[string]string) // map[string]string = {"macAddr",nil}
 
 func main() {
-	var status = make(map[string]string) // map[string]string = {"macAddr",nil}
 
-	macAddr := GetMacAddr()
+	/*	fyne.Fyncmain()
+		return*/
+	log.Printf("os.Create(filepath) docker")
+
+	//update.DownloadFile_("e:\\a.txt","https://raw.githubusercontent.com/idreamsi/RadioHead/master/LICENSE")
+	//	return
+
+	imageName := "docker.yulinmei.cn/loan:0.0.1-SNAPSHOT"
+
+	docker.NewClient(imageName) //"docker.io/library/alpine")
+
+	log.Printf("MAIN 主程序继续 docker")
+
+	macAddr := config.GetMacAddr()
 
 	status["macAddr"] = macAddr
 	status["deviceEui"] = macAddr + "ff"
+
+	status["broker"] = "tcp://192.168.10.90:1883" // "tcp://mqtt.yulinmei.cn:1883"
+	status["clientId"] = "storage_space_client_id" + macAddr + "ff"
 
 	//    os.Exit(-1)
 	/*   web.Webserver()
@@ -62,9 +95,9 @@ func main() {
 
 
 	    gpio.Start()*/
-	cfg := Open_config()
+	cfg := config.Open_config()
 
-	go Webserver(&Wg, status)
+	go web.Webserver(&Wg, status)
 
 	log.Printf("MAIN 主程序继续 $v")
 
@@ -83,14 +116,24 @@ func main() {
 	if err != nil {
 		log.Printf("无法读取 $v", err)
 	}
+	log.Printf("MAIN 主程序继续 docker", appID, status, server)
+	mqtt.New_mqtt(appID, status, server)
+	//	mqtt.Mqtt_local(status)
 
-	New_mqtt(appID, status, server)
+	camera.ImageMain()
+
+	r := strings.NewReplacer("<DevID>", status["deviceEui"], "<AppID>", appID)
+	qrcode.Qrcode_main(r.Replace(mqtt.Uplink_Messages_t_up))
+
+	//	return
+
 	log.Printf("MAIN 主程序继续  New_mqtt")
 
-	Seral_up_network(cfg)
+	//	serial.Seral_up_network(cfg)
 	log.Printf("MAIN 主程序继续 serial")
 
-	NewClient()
+	//	docker.NewClient("docker.io/library/alpine")
+
 	log.Printf("MAIN 主程序继续 docker")
 
 	/*    var char string = "gb18030"
@@ -102,4 +145,5 @@ func main() {
 
 	      }*/
 	Wg.Wait()
+
 }
