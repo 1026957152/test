@@ -44,11 +44,11 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 var status map[string]string
 
 func Webserver(Wg *sync.WaitGroup, status_ map[string]string) {
+	Wg.Add(1)
 	log.Printf("MAIN 主程序继续 webserver")
 
 	status = status_
 
-	Wg.Add(1)
 	var thingName string = "Led"
 	var region string = "us-west-2"
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {

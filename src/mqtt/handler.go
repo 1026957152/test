@@ -26,12 +26,13 @@ var SubscribeHandler MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Mes
 	//text:= fmt.Sprintf("this is result msg #%d!", knt)
 	knt++
 
-	var downlinkMessage DownlinkMessage
-
-	var message = downlinkMessage.Downlinks
+	var downlink Downlink
 
 	//var m map[string]interface{}
-	json.Unmarshal(msg.Payload(), &message)
+	json.Unmarshal(msg.Payload(), &downlink)
+
+	var message DownlinkMessage
+	json.Unmarshal([]byte(downlink.Downlinks.Pay_load), &message)
 
 	fmt.Printf("MSG: %s\n", message)
 

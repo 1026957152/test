@@ -24,15 +24,17 @@ var UPLINK_MESSAGE_t_down_acks = "<AppID>/devices/<DevID>/down/acks"
 
 var DOWNLINK_Messages_t_down = "<AppID>/devices/<DevID>/down"
 
-type Downlinks struct {
-	Session_key_id  string
+type DownlinkMessage struct {
+	Session_key_id string
+	Pay_load       string
+
 	Command         string
 	Confirmed       bool
 	Correlation_ids []string
 }
 
-type DownlinkMessage struct {
-	Downlinks Downlinks
+type Downlink struct {
+	Downlinks DownlinkMessage
 }
 
 /*var Event_Messages = "<AppID>/devices/<DevID>/event"

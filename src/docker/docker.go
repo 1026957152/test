@@ -39,13 +39,15 @@ func NewClient(imageName_ string) {
 var ctx context.Context
 var cli *client.Client
 
-func PullImage() {
+func PullImage(images []string) {
 
-	reader, err := cli.ImagePull(ctx, imageName, types.ImagePullOptions{})
-	if err != nil {
-		panic(err)
+	for _, imageName := range images {
+		reader, err := cli.ImagePull(ctx, imageName, types.ImagePullOptions{})
+		if err != nil {
+			panic(err)
+		}
+		io.Copy(os.Stdout, reader)
 	}
-	io.Copy(os.Stdout, reader)
 
 }
 

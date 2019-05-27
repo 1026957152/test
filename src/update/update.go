@@ -56,16 +56,21 @@ func DownloadFile_(filepath string, url string) (config UpdateConfig, err error)
 	// Get the data
 	resp, err := http.Get(url)
 	if err != nil {
+		log.Printf("获取远程资源 失败 %s", url)
+
 		return config, err
 	}
 	defer resp.Body.Close()
 
-	log.Printf("resp, err := http.Get(url)")
-
 	// Check server response
 	if resp.StatusCode != http.StatusOK {
+
+		log.Printf("获取远程资源 失败 %s", url)
+
 		return config, fmt.Errorf("bad status: %s", resp.Status)
 	}
+
+	log.Printf("获取远程资源 成功  %s", url)
 
 	// Writer the body to file
 	_, err = io.Copy(out, resp.Body)
@@ -75,7 +80,6 @@ func DownloadFile_(filepath string, url string) (config UpdateConfig, err error)
 
 	//	cfg, err := config.ReadDefault(filepath)
 
-	var config_ UpdateConfig
 	source, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		panic(err)
@@ -84,7 +88,7 @@ func DownloadFile_(filepath string, url string) (config UpdateConfig, err error)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Value: %#v\n", config.Images[0])
+	fmt.Printf("Value: %#v\n", config.Images)
 
-	return config_, nil
+	return config, nil
 }

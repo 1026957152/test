@@ -5,6 +5,8 @@ import (
 	"errors"
 	"test/src/config"
 	"test/src/mqtt"
+	"test/src/web"
+
 	//"test"
 
 	/*	"qrcode"
@@ -19,7 +21,6 @@ import (
 	"net"
 
 	"sync"
-	"test/src/web"
 )
 
 var ERR_EOF = errors.New("EOF")
