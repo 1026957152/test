@@ -154,13 +154,13 @@ func r(s io.ReadWriteCloser, uplink_Messages_t_up_topic string) {
 
 }
 
-func Qrcode_main(uplink_Messages_t_up_topic string) {
+func Qrcode_main(usbserial string, uplink_Messages_t_up_topic string) {
 	fmt.Printf("打开串口：%s \n")
 
 	//	file, _ := os.Getwd()
 
 	//设置串口编号
-	c := &serial.Config{Name: "COM30", Baud: 9600, ReadTimeout: 0} //time.Second * 1}
+	c := &serial.Config{Name: usbserial, Baud: 9600, ReadTimeout: 0} //time.Second * 1}
 	//打开串口
 	s, err := serial.OpenPort(c)
 

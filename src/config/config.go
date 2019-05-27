@@ -24,8 +24,9 @@ var (
 )
 
 type Configuration struct {
-	Server string
-	AppID  string
+	Server    string
+	AppID     string
+	Usbserial string
 
 	UpdateUrl string
 	Uate      uint8
@@ -54,15 +55,17 @@ func GetMacAddr() (addr string) {
 	}
 	return
 }
+
 func Open_config() (cfg_ *config.Config, c Configuration) {
 	//获取当前路径
 	var err error
-	var server, appID, updateUrl string
+	var server, appID, updateUrl, COM string
 	var cf Configuration
 	var cfg *config.Config
 	file, _ := os.Getwd()
 	log.Printf("读取窗口信息 %s", file)
 	log.Printf("读取窗口信息 %v", runtime.NumCPU())
+
 	cfg, err = config.ReadDefault(file + *conFile)
 
 	if err != nil {
@@ -88,6 +91,13 @@ func Open_config() (cfg_ *config.Config, c Configuration) {
 	if err != nil {
 		log.Printf("无法读取 $v", err)
 	}
+
+	COM, err = cfg.String("COM", "COMID_QRCODE")
+	if err != nil {
+		log.Printf("无法读取 $v", err)
+	}
+
+	cf.Usbserial = COM
 
 	cf.AppID = appID
 	cf.Server = server
@@ -232,7 +242,7 @@ func Persistence_Command() {
 	//    cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid}
 
 	// cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uint32(uid), Gid: uint32(gid)}
-	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	//cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	out, err := cmd.Output()
 	if err != nil {
 		fmt.Printf("Run Command got an Error: %s\n", err)

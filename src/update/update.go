@@ -2,13 +2,22 @@ package update
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 )
 
-func DownloadFile_(filepath string, url string) (err error) {
+type UpdateConfig struct {
+	Images []string
+}
+
+type updateConfig struct {
+}
+
+func DownloadFile_(filepath string, url string) (config UpdateConfig, err error) {
 
 	var steps map[string]string = make(map[string]string)
 	steps["step1"] = "下载其他"
@@ -37,7 +46,7 @@ func DownloadFile_(filepath string, url string) (err error) {
 	out, err := os.Create(filepath)
 	if err != nil {
 		panic(err)
-		return err
+		return config, err
 	}
 	log.Printf("out, err := os.Create(filepath)")
 
@@ -47,7 +56,7 @@ func DownloadFile_(filepath string, url string) (err error) {
 	// Get the data
 	resp, err := http.Get(url)
 	if err != nil {
-		return err
+		return config, err
 	}
 	defer resp.Body.Close()
 
@@ -55,14 +64,27 @@ func DownloadFile_(filepath string, url string) (err error) {
 
 	// Check server response
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("bad status: %s", resp.Status)
+		return config, fmt.Errorf("bad status: %s", resp.Status)
 	}
 
 	// Writer the body to file
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
-		return err
+		return config, err
 	}
 
-	return nil
+	//	cfg, err := config.ReadDefault(filepath)
+
+	var config_ UpdateConfig
+	source, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		panic(err)
+	}
+	err = yaml.Unmarshal(source, &config)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Value: %#v\n", config.Images[0])
+
+	return config_, nil
 }

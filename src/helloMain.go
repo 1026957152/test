@@ -108,7 +108,7 @@ func main() {
 	camera.ImageMain()
 
 	r := strings.NewReplacer("<DevID>", status["deviceEui"], "<AppID>", cf.AppID)
-	qrcode.Qrcode_main(r.Replace(mqtt.Uplink_Messages_t_up))
+	qrcode.Qrcode_main(cf.Usbserial, r.Replace(mqtt.Uplink_Messages_t_up))
 
 	//	return
 
