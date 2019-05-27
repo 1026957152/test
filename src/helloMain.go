@@ -74,10 +74,6 @@ func main() {
 	//update.DownloadFile_("e:\\a.txt","https://raw.githubusercontent.com/idreamsi/RadioHead/master/LICENSE")
 	//	return
 
-	imageName := "docker.yulinmei.cn/loan:0.0.1-SNAPSHOT"
-
-	docker.NewClient(imageName) //"docker.io/library/alpine")
-
 	log.Printf("MAIN 主程序继续 docker")
 
 	macAddr := config.GetMacAddr()
@@ -96,34 +92,22 @@ func main() {
 
 
 	    gpio.Start()*/
-	cfg := config.Open_config()
+	_, cf := config.Open_config()
+	//	imageName := "docker.yulinmei.cn/loan:0.0.1-SNAPSHOT"
+
+	docker.NewClient(cf.UpdateUrl) //"docker.io/library/alpine")
 
 	go web.Webserver(&Wg, status)
 
 	log.Printf("MAIN 主程序继续 $v")
 
-	//获取配置文件中的配置项
-	_, err := cfg.String("TTN", "DeviceID")
-	if err != nil {
-		log.Printf("无法读取 $v", err)
-	}
-
-	server, err := cfg.String("TTN", "Server")
-	if err != nil {
-		log.Printf("无法读取 $v", err)
-	}
-
-	appID, err := cfg.String("TTN", "AppID")
-	if err != nil {
-		log.Printf("无法读取 $v", err)
-	}
-	log.Printf("MAIN 主程序继续 docker", appID, status, server)
-	mqtt.New_mqtt(appID, status, server)
+	log.Printf("MAIN 主程序继续 docker", cf.AppID, status, cf.Server)
+	mqtt.New_mqtt(cf.AppID, status, cf.Server)
 	//	mqtt.Mqtt_local(status)
 
 	camera.ImageMain()
 
-	r := strings.NewReplacer("<DevID>", status["deviceEui"], "<AppID>", appID)
+	r := strings.NewReplacer("<DevID>", status["deviceEui"], "<AppID>", cf.AppID)
 	qrcode.Qrcode_main(r.Replace(mqtt.Uplink_Messages_t_up))
 
 	//	return
