@@ -183,6 +183,8 @@ func main__() {
 }
 
 func Seral_up_network(cfg *config.Config) {
+	log.Printf("MAIN 主程序继续 serial")
+
 	defer func() {
 		fmt.Println("Mqqt 找值，defer end...")
 	}()

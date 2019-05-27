@@ -44,6 +44,8 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 var status map[string]string
 
 func Webserver(Wg *sync.WaitGroup, status_ map[string]string) {
+	log.Printf("MAIN 主程序继续 webserver")
+
 	status = status_
 
 	Wg.Add(1)

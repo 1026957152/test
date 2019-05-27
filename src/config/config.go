@@ -19,8 +19,8 @@ import (
 )
 
 var (
-	conFile   = flag.String("configfile", string(os.PathSeparator)+"config.ini", "config file")
-	conFile_2 = flag.String("configfile_2", string(os.PathSeparator)+"config_2.ini", "config file")
+	conFile   = flag.String("configfile", string(os.PathSeparator)+"src"+string(os.PathSeparator)+"config.ini", "config file")
+	conFile_2 = flag.String("configfile_2", string(os.PathSeparator)+"src"+string(os.PathSeparator)+"config_2.ini", "config file")
 )
 
 type Configuration struct {
@@ -57,6 +57,8 @@ func GetMacAddr() (addr string) {
 }
 
 func Open_config() (cfg_ *config.Config, c Configuration) {
+	log.Printf("MAIN 主程序继续 Open_config")
+
 	//获取当前路径
 	var err error
 	var server, appID, updateUrl, COM string

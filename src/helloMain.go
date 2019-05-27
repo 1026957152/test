@@ -3,12 +3,8 @@ package main
 import (
 	"bytes"
 	"errors"
-	"strings"
-	"test/src/camera"
 	"test/src/config"
-	"test/src/docker"
 	"test/src/mqtt"
-	"test/src/qrcode"
 	//"test"
 
 	/*	"qrcode"
@@ -74,8 +70,6 @@ func main() {
 	//update.DownloadFile_("e:\\a.txt","https://raw.githubusercontent.com/idreamsi/RadioHead/master/LICENSE")
 	//	return
 
-	log.Printf("MAIN 主程序继续 docker")
-
 	macAddr := config.GetMacAddr()
 
 	status["macAddr"] = macAddr
@@ -95,31 +89,21 @@ func main() {
 	_, cf := config.Open_config()
 	//	imageName := "docker.yulinmei.cn/loan:0.0.1-SNAPSHOT"
 
-	docker.NewClient(cf.UpdateUrl) //"docker.io/library/alpine")
+	///docker.NewClient(cf.UpdateUrl) //"docker.io/library/alpine")
 
 	go web.Webserver(&Wg, status)
 
-	log.Printf("MAIN 主程序继续 $v")
-
-	log.Printf("MAIN 主程序继续 docker", cf.AppID, status, cf.Server)
 	mqtt.New_mqtt(cf.AppID, status, cf.Server)
 	//	mqtt.Mqtt_local(status)
 
-	camera.ImageMain()
+	//	camera.ImageMain()
 
-	r := strings.NewReplacer("<DevID>", status["deviceEui"], "<AppID>", cf.AppID)
-	qrcode.Qrcode_main(cf.Usbserial, r.Replace(mqtt.Uplink_Messages_t_up))
+	//	r := strings.NewReplacer("<DevID>", status["deviceEui"], "<AppID>", cf.AppID)
+	//qrcode.Qrcode_main(cf.Usbserial, r.Replace(mqtt.Uplink_Messages_t_up))
 
 	//	return
 
-	log.Printf("MAIN 主程序继续  New_mqtt")
-
-	//	serial.Seral_up_network(cfg)
-	log.Printf("MAIN 主程序继续 serial")
-
-	//	docker.NewClient("docker.io/library/alpine")
-
-	log.Printf("MAIN 主程序继续 docker")
+	//serial.Seral_up_network(cfg)
 
 	/*    var char string = "gb18030"
 	      if mahonia.GetCharset(char) == nil {

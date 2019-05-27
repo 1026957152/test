@@ -14,7 +14,7 @@ import (
 var imageName string
 
 func NewClient(imageName_ string) {
-
+	log.Printf("MAIN 主程序继续 docker")
 	imageName = imageName_
 	//"docker.io/library/alpine"
 	defer func() {

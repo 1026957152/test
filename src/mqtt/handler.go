@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"strings"
+	//"strings"
 	"test/src/execC"
 )
 

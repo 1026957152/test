@@ -104,6 +104,8 @@ var Client MQTT.Client
 var deviceId, appId string
 
 func New_mqtt(appID string, status map[string]string, server string) {
+	log.Printf("MAIN 主程序继续  New_mqtt")
+	//	log.Printf("MAIN 主程序继续 New_mqtt", cf.AppID, status, cf.Server)
 
 	deviceId = status["deviceEui"]
 	appId = appID
