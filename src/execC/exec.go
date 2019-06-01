@@ -261,9 +261,12 @@ func systemctl(fileName string) {
 	var systemctl = `
 sudo systemctl enable {{.Name}}
 sudo systemctl start {{.Gift}}
-sudo journalctl -f -u {{.Gift}}
 `
-
+	/*	var systemctl = `
+	sudo systemctl enable {{.Name}}
+	sudo systemctl start {{.Gift}}
+	sudo journalctl -f -u {{.Gift}}
+	`*/
 	var recipients = []Recipient{
 		{"simple-api.service",
 			"simple-api",
@@ -300,6 +303,7 @@ sudo journalctl -f -u {{.Gift}}
 	//}()
 
 	err = cmd.Run()
+
 	if err != nil {
 		log.Fatal(err)
 	}
