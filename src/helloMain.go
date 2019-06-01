@@ -3,8 +3,11 @@ package main
 import (
 	"bytes"
 	"errors"
+	"flag"
+	"fmt"
 	"test/src/config"
 	"test/src/mqtt"
+	"test/src/update"
 	"test/src/web"
 
 	//"test"
@@ -62,7 +65,24 @@ func (self *AgentContext) CheckHostType(host_type string) error {
 var Wg sync.WaitGroup
 var status = make(map[string]string) // map[string]string = {"macAddr",nil}
 
+var Input_pstrName = flag.String("name", "gerry", "input ur name")
+var Input_piAge = flag.Int("age", 20, "input ur age")
+var Input_flagvar int
+
+func Init() {
+	flag.IntVar(&Input_flagvar, "flagname", 1234, "help message for flagname")
+}
+
 func main() {
+	Init()
+	flag.Parse()
+	fmt.Println("name=", *Input_pstrName)
+	fmt.Println("age=", *Input_piAge)
+	fmt.Println("flagname=", Input_flagvar)
+
+	if *Input_pstrName == "aaa" {
+		update.Install("", "a")
+	}
 
 	/*	fyne.Fyncmain()
 		return*/
