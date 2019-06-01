@@ -1,0 +1,66 @@
+version: '3.6'
+services:
+ mqtt:
+  image: mjenz/rpi-mosquitto:latest
+  ports:
+    - "1883:1883"
+  restart:
+    on-failure
+  deploy:
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 120s
+
+ webapp:
+  build: .
+  image: webapp:tag
+  ports:
+    - "80:80"
+  depends_on:
+    - mysql
+    - mqtt
+  deploy:
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 2
+      window: 120s
+#        condition: service_healthy
+
+
+ mysql:  
+  image: hypriot/rpi-mysql:latest
+  container_name: mysql
+  volumes:
+    - mysql-volume:/var/lib/mysql
+    - mycustom.cnf:/etc/mysql/conf.d/custom.cnf
+  command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --init-connect='SET NAMES UTF8MB4;' --sql-mode="NO_ENGINE_SUBSTITUTION" --innodb-flush-log-at-trx-commit=0
+# alter table `table_name` convert to character set  utf8mb4;
+# SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';
+#show variables like 'sql_mode';
+  command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  # or:
+  command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+  environment:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: storage
+    MYSQL_USER: user
+    MYSQL_PASSWORD: 123456
+
+#  healthcheck:
+#    test: "/usr/bin/mysql --user=root --password=rootpasswd --execute \"SHOW DATABASES;\""
+#    interval: 2s
+#    timeout: 20s
+#    retries: 10
+   command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8_unicode_ci']
+  deploy:
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 120s
+
+volumes:
+  mysql-volume:
