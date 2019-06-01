@@ -137,3 +137,9 @@ func main() {
 	}
 
 }
+
+func main___() {
+	cmdStr := "sudo docker run -v ~/exp/a.out:/a.out ubuntu:14.04 /a.out -m 10m"
+	out, _ := exec.Command("/bin/sh", "-c", cmdStr).Output()
+	fmt.Printf("%s", out)
+}

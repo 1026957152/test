@@ -1,0 +1,23 @@
+
+release:
+  id: aaa
+  version: aaaa
+  licenseVersion: aaa
+  releaseDate: 2019-05-28
+  binaries:
+    -href: aaaa
+     size: 200
+     platform: ox
+     verification: aaaa
+
+
+images:
+  - docker.yulinmei.cn/loan:0.0.1-SNAPSHOT
+  - hypriot/rpi-mysql:latest
+  - mjenz/rpi-mosquitto:latest
+docker-compose:
+  url: https://raw.githubusercontent.com/1026957152/test/master/src/dockerImages.yml
+
+
+
+foo: 2

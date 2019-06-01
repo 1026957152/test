@@ -5,8 +5,6 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"os"
 	"strings"
-	"test/src/docker"
-
 	"test/src/update"
 )
 
@@ -33,7 +31,7 @@ func command_update(client MQTT.Client, message DownlinkMessage) {
 			//fmt.Println(a, b)
 
 			url := "https://raw.githubusercontent.com/1026957152/test/master/src/dockerImages.yml?token=AAT2YJO6SOVPYF254IWKVY245PZSK"
-			url = "https://raw.githubusercontent.com/1026957152/test/master/src/dockerImages.yml?token=AAT2YJIBGBRT75CIFFNOZ7C45P6HC"
+			url = "https://raw.githubusercontent.com/1026957152/test/master/src/dockerImages.yml"
 			//var filePath string = "~"+string(os.PathSeparator)+"a.txt"
 			var filePath string = "e:\\" + string(os.PathSeparator) + "a.txt"
 
@@ -48,7 +46,8 @@ func command_update(client MQTT.Client, message DownlinkMessage) {
 				uplink_Messages_t_up_mqtt(client, uplink_Messages_t_up_topic, uplink_message) //an acknowledgement of a confirmed downlink
 
 				fmt.Printf("----------- images %s", cf.Images)
-				docker.PullImage(cf.Images)
+
+				//	docker.PullImage(cf.Images)
 
 			}
 
