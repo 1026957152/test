@@ -293,11 +293,6 @@ sudo journalctl -f -u {{.Gift}}
 		//       cmd.SysProcAttr = &syscall.SysProcAttr{}
 		//     cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uint32(uid), Gid: uint32(gid)}
 	}
-	tm := time.AfterFunc(10*time.Second, func() {
-		//	syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
-	})
-
-	log.Printf("timer=%v", tm)
 
 	//  go func(){
 	//    time.Sleep(1*time.Second)
@@ -308,5 +303,6 @@ sudo journalctl -f -u {{.Gift}}
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Printf("执行结束啊啊啊")
 
 }
