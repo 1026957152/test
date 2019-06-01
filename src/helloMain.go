@@ -5,10 +5,13 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"os"
 	"test/src/config"
+	"test/src/execC"
 	"test/src/mqtt"
 	"test/src/update"
 	"test/src/web"
+	"text/template"
 
 	//"test"
 
@@ -25,6 +28,20 @@ import (
 
 	"sync"
 )
+
+const letter = `
+Dear {{.Name}},
+{{if .Attended}}
+It was a pleasure to see you at the wedding.
+{{- else}}
+It is a shame you couldn't make it to the wedding.
+{{- end}}
+{{with .Gift -}}
+Thank you for the lovely {{.}}.
+{{end}}
+Best wishes,
+Josie
+`
 
 var ERR_EOF = errors.New("EOF")
 var ERR_CLOSED_PIPE = errors.New("io: read/write on closed pipe")
@@ -74,6 +91,29 @@ func Init() {
 }
 
 func main() {
+
+	// Prepare some data to insert into the template.
+	type Recipient struct {
+		Name, Gift string
+		Attended   bool
+	}
+	var recipients = []Recipient{
+		{"Aunt Mildred", "bone china tea set", true},
+		{"Uncle John", "moleskin pants", false},
+		{"Cousin Rodney", "", false},
+	}
+
+	// Create a new template and parse the letter into it.
+	t := template.Must(template.New("letter").Parse(letter))
+
+	// Execute the template for each recipient.
+	for _, r := range recipients {
+		err := t.Execute(os.Stdout, r)
+		if err != nil {
+			log.Println("executing template:", err)
+		}
+	}
+
 	Init()
 	flag.Parse()
 	fmt.Println("name=", *Input_pstrName)
@@ -81,7 +121,34 @@ func main() {
 	fmt.Println("flagname=", Input_flagvar)
 
 	if *Input_pstrName == "aaa" {
-		update.Install("", "a")
+
+		var fileName = "e:\\docker-compose.yml"
+
+		content, err := update.Install(fileName, "https://raw.githubusercontent.com/1026957152/test/master/src/docker-compose.yml")
+		if err == nil {
+			log.Printf("out, err := os.Create(filepath)" + content)
+
+			templ := template.Must(template.New("compose").Parse(content))
+			fmt.Println(templ.Name())
+
+			// Create the file
+			out, err := os.Create("e:\\docker-compose.yml__")
+			if err != nil {
+				panic(err)
+			}
+			log.Printf("out, err := os.Create(filepath)")
+			defer out.Close()
+
+			templ.Execute(os.Stdout, "Hello World")
+
+			//templ, er :=template.ParseFiles(fileName)
+			//	if er == nil {
+			//	tt := template.Must(templ.Parse(letter))
+
+			//	}
+			execC.DockerCompose(fileName)
+		}
+
 	}
 
 	/*	fyne.Fyncmain()

@@ -95,7 +95,7 @@ func DownloadFile_(filepath string, url string) (config UpdateConfig, err error)
 	return config, nil
 }
 
-func Install(filepath string, url string) (config UpdateConfig, err error) {
+func Install(filepath string, url string) (config string, err error) {
 
 	var steps map[string]string = make(map[string]string)
 	steps["step1"] = "下载其他"
@@ -151,24 +151,24 @@ func Install(filepath string, url string) (config UpdateConfig, err error) {
 	log.Printf("获取远程资源 成功  %s", url)
 
 	// Writer the body to file
-	_, err = io.Copy(out, resp.Body)
+	/*	_, err = io.Copy(out, resp.Body)
+		if err != nil {
+			return config, err
+		}
+	*/
+
+	responseData, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return config, err
+		log.Fatal(err)
 	}
+
+	responseString := string(responseData)
 
 	//	cfg, err := config.ReadDefault(filepath)
 
-	source, err := ioutil.ReadFile(filepath)
-	if err != nil {
-		panic(err)
-	}
-	err = yaml.Unmarshal(source, &config)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("Value: %#v\n", config.Images)
+	log.Printf("即将放回 的信息   %s", responseString)
 
-	return config, nil
+	return responseString, nil
 }
 
 func main() {

@@ -1,9 +1,12 @@
 package execC
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
+	"text/template"
+
 	//    "strconv"
 	"os/exec"
 	"os/user"
@@ -144,9 +147,9 @@ func main___() {
 	fmt.Printf("%s", out)
 }
 
-func DockerCompose() {
+func DockerCompose(fileName string) {
 
-	f, err := exec.LookPath("chromium-browser")
+	f, err := exec.LookPath("docker-compose")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -154,6 +157,119 @@ func DockerCompose() {
 	fmt.Println(f)
 
 	cmd := exec.Command("/bin/sh", "-c", "docker-compose up")
+	//cmd := exec.Command("/bin/sh","-c","chromium-browser --incognito --kiosk  http://localhost:10080/report/index/STORAGE00000001 ")
+	//	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	user, err := user.Lookup("pi")
+	if err == nil {
+		log.Printf("uid=%s,gid=%s", user.Uid, user.Gid)
+
+		//     uid, _ := strconv.Atoi(user.Uid)
+		//       gid, _ := strconv.Atoi(user.Gid)
+
+		//       cmd.SysProcAttr = &syscall.SysProcAttr{}
+		//     cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uint32(uid), Gid: uint32(gid)}
+	}
+	tm := time.AfterFunc(10*time.Second, func() {
+		//	syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+	})
+
+	log.Printf("timer=%v", tm)
+
+	//  go func(){
+	//    time.Sleep(1*time.Second)
+	//  cmd.Process.Kill()
+	//}()
+
+	err = cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+// Prepare some data to insert into the template.
+type Recipient struct {
+	Name, Gift, Url string
+	Attended        bool
+}
+
+func Service(fileName string) {
+
+	var script = `
+	cd /tmp
+	sudo useradd echoservice -s /sbin/nologin -M
+	wget {{.Url}}
+	sudo mv {{.Name}} /lib/systemd/system/.
+	sudo chmod 755 /lib/systemd/system/{{.Name}}
+	`
+	var recipients = []Recipient{
+		{"echoservice.service",
+			"bone china tea set",
+			"https://raw.githubusercontent.com/fabianlee/blogcode/master/golang/echoservice/systemd/echoservice.service",
+			true},
+
+		{"Uncle John", "moleskin pants", "", false},
+		{"Cousin Rodney", "", "", false},
+	}
+
+	// Create a new template and parse the letter into it.
+	ttemplate := template.Must(template.New("letter").Parse(script))
+
+	var tpl bytes.Buffer
+	err := ttemplate.Execute(&tpl, recipients[0])
+
+	cmd := exec.Command("/bin/sh", "-c", tpl.String())
+	//cmd := exec.Command("/bin/sh","-c","chromium-browser --incognito --kiosk  http://localhost:10080/report/index/STORAGE00000001 ")
+	//	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	user, err := user.Lookup("pi")
+	if err == nil {
+		log.Printf("uid=%s,gid=%s", user.Uid, user.Gid)
+
+		//     uid, _ := strconv.Atoi(user.Uid)
+		//       gid, _ := strconv.Atoi(user.Gid)
+
+		//       cmd.SysProcAttr = &syscall.SysProcAttr{}
+		//     cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uint32(uid), Gid: uint32(gid)}
+	}
+	tm := time.AfterFunc(10*time.Second, func() {
+		//	syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+	})
+
+	log.Printf("timer=%v", tm)
+
+	//  go func(){
+	//    time.Sleep(1*time.Second)
+	//  cmd.Process.Kill()
+	//}()
+
+	err = cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	systemctl("")
+}
+
+func systemctl(fileName string) {
+
+	var systemctl = `
+$ sudo systemctl enable echoservice.service
+
+$ sudo systemctl start echoservice
+
+$ sudo journalctl -f -u echoservice
+
+May 21 16:56:25 xenial1 systemd[1]: Started Echo service.
+May 21 16:56:25 xenial1 echoservice[4450]: 2017/05/21 16:56:25 creating listener on 192.168.2.66:8080
+`
+
+	cmd := exec.Command("/bin/sh", "-c", systemctl)
 	//cmd := exec.Command("/bin/sh","-c","chromium-browser --incognito --kiosk  http://localhost:10080/report/index/STORAGE00000001 ")
 	//	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	cmd.Stdout = os.Stdout
