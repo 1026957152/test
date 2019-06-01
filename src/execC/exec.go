@@ -206,9 +206,9 @@ func Service(fileName string) {
 	sudo chmod 755 /lib/systemd/system/{{.Name}}
 	`
 	var recipients = []Recipient{
-		{"echoservice.service",
+		{"simple-api.service",
 			"bone china tea set",
-			"https://raw.githubusercontent.com/fabianlee/blogcode/master/golang/echoservice/systemd/echoservice.service",
+			"https://raw.githubusercontent.com/1026957152/test/master/src/simple-api.service",
 			true},
 
 		{"Uncle John", "moleskin pants", "", false},
@@ -259,15 +259,24 @@ func Service(fileName string) {
 func systemctl(fileName string) {
 
 	var systemctl = `
-$ sudo systemctl enable echoservice.service
-
-$ sudo systemctl start echoservice
-
-$ sudo journalctl -f -u echoservice
-
-May 21 16:56:25 xenial1 systemd[1]: Started Echo service.
-May 21 16:56:25 xenial1 echoservice[4450]: 2017/05/21 16:56:25 creating listener on 192.168.2.66:8080
+sudo systemctl enable {{.Name}}
+sudo systemctl start {{.Gift}}
+sudo journalctl -f -u {{.Gift}}
 `
+
+	var recipients = []Recipient{
+		{"simple-api.service",
+			"simple-api",
+			"https://raw.githubusercontent.com/1026957152/test/master/src/simple-api.service",
+			true},
+		{"Uncle John", "moleskin pants", "", false},
+		{"Cousin Rodney", "", "", false},
+	}
+
+	// Create a new template and parse the letter into it.
+	ttemplate := template.Must(template.New("letter").Parse(systemctl))
+	var tpl bytes.Buffer
+	err := ttemplate.Execute(&tpl, recipients[0])
 
 	cmd := exec.Command("/bin/sh", "-c", systemctl)
 	//cmd := exec.Command("/bin/sh","-c","chromium-browser --incognito --kiosk  http://localhost:10080/report/index/STORAGE00000001 ")
@@ -281,7 +290,6 @@ May 21 16:56:25 xenial1 echoservice[4450]: 2017/05/21 16:56:25 creating listener
 
 		//     uid, _ := strconv.Atoi(user.Uid)
 		//       gid, _ := strconv.Atoi(user.Gid)
-
 		//       cmd.SysProcAttr = &syscall.SysProcAttr{}
 		//     cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uint32(uid), Gid: uint32(gid)}
 	}

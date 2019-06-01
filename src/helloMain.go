@@ -92,6 +92,8 @@ func Init() {
 
 func main() {
 
+	execC.Service(" ")
+
 	// Prepare some data to insert into the template.
 	type Recipient struct {
 		Name, Gift string
