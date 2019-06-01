@@ -278,7 +278,7 @@ sudo journalctl -f -u {{.Gift}}
 	var tpl bytes.Buffer
 	err := ttemplate.Execute(&tpl, recipients[0])
 
-	cmd := exec.Command("/bin/sh", "-c", systemctl)
+	cmd := exec.Command("/bin/sh", "-c", tpl.String())
 	//cmd := exec.Command("/bin/sh","-c","chromium-browser --incognito --kiosk  http://localhost:10080/report/index/STORAGE00000001 ")
 	//	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	cmd.Stdout = os.Stdout
