@@ -8,7 +8,7 @@ import (
 	"test/src/update"
 )
 
-func command_update(client MQTT.Client, message DownlinkMessage) {
+func command_update(client MQTT.Client, session_key_id string, message DownlinkMessageCommand) {
 
 	r := strings.NewReplacer("<DevID>", deviceId, "<AppID>", appId)
 	link_topic := r.Replace(UPLINK_MESSAGE_t_down_acks)
@@ -39,9 +39,9 @@ func command_update(client MQTT.Client, message DownlinkMessage) {
 			if err == nil {
 				uplink_Messages_t_up_topic := r.Replace(Uplink_Messages_t_up)
 
-				var uplink_message map[string]interface{} = make(map[string]interface{})
-				uplink_message["session_key_id"] = "AWiZpAyXrAfEkUNkBljRoA=="
-				uplink_message["uplink_token"] = "CiIKIAoUZXVpLTAyNDIwMjAwMDAyNDc4MDMSCAJCAgAAJHgDEMj49+ME"
+				var uplink_message UplinkMessage
+				uplink_message.Session_key_id = session_key_id
+				uplink_message.Uplink_token = "CiIKIAoUZXVpLTAyNDIwMjAwMDAyNDc4MDMSCAJCAgAAJHgDEMj49+ME"
 
 				uplink_Messages_t_up_mqtt(client, uplink_Messages_t_up_topic, uplink_message) //an acknowledgement of a confirmed downlink
 

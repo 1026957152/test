@@ -9,15 +9,13 @@ import (
 	"test/src/config"
 	"test/src/execC"
 	"test/src/mqtt"
+	"test/src/serial"
 	"test/src/update"
 	"test/src/web"
 	"text/template"
-
 	//"test"
-
 	/*	"qrcode"
 		"strings"*/
-
 	/*	"fmt"
 		"io"
 		"net/http"
@@ -25,7 +23,6 @@ import (
 	"log"
 	//"mqtt"
 	"net"
-
 	"sync"
 )
 
@@ -92,8 +89,6 @@ func Init() {
 
 func main() {
 
-	execC.Service(" ")
-
 	// Prepare some data to insert into the template.
 	type Recipient struct {
 		Name, Gift string
@@ -122,7 +117,10 @@ func main() {
 	fmt.Println("age=", *Input_piAge)
 	fmt.Println("flagname=", Input_flagvar)
 
-	if *Input_pstrName == "aaa" {
+	if *Input_pstrName == "install" {
+		execC.Service(" ")
+	}
+	if *Input_pstrName == "aa" {
 
 		var fileName = "e:\\docker-compose.yml"
 
@@ -140,9 +138,7 @@ func main() {
 			}
 			log.Printf("out, err := os.Create(filepath)")
 			defer out.Close()
-
 			templ.Execute(os.Stdout, "Hello World")
-
 			//templ, er :=template.ParseFiles(fileName)
 			//	if er == nil {
 			//	tt := template.Must(templ.Parse(letter))
@@ -184,6 +180,8 @@ func main() {
 	go web.Webserver(&Wg, status)
 
 	mqtt.New_mqtt(cf.AppID, status, cf.Server)
+
+	serial.Init(nil)
 	//	mqtt.Mqtt_local(status)
 
 	//	camera.ImageMain()

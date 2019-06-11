@@ -24,6 +24,15 @@ var UPLINK_MESSAGE_t_down_acks = "<AppID>/devices/<DevID>/down/acks"
 
 var DOWNLINK_Messages_t_down = "<AppID>/devices/<DevID>/down"
 
+type DownlinkMessageCommand struct {
+	Session_key_id string
+	Pay_load       string
+
+	Command         string
+	Confirmed       bool
+	Correlation_ids []string
+}
+
 type DownlinkMessage struct {
 	Session_key_id string
 	Pay_load       string
@@ -35,6 +44,30 @@ type DownlinkMessage struct {
 
 type Downlink struct {
 	Downlinks DownlinkMessage
+}
+
+type UplinkMessage struct {
+	Session_key_id  string   `json:"session_key_id"`
+	Pay_load        string   `json:"pay_load"`
+	Command         string   `json:"command"`
+	Confirmed       bool     `json:"confirmed"`
+	Correlation_ids []string `json:"correlation_ids"`
+	Uplink_token    string   `json:"uplink_token"`
+}
+type Uplink struct {
+	Uplink_message UplinkMessage `json:"uplink_message"`
+	Device_id      string        `json:"device_id"`
+	Application_id string        `json:"application_id"`
+	Dev_eui        string        `json:"dev_eui"`
+	Join_eui       string        `json:"join_eui"`
+	Dev_addr       string        `json:"dev_addr"`
+
+	/*	message["device_id"] = "dev1"
+		message["application_id"] = "app1"
+		message["dev_eui"] = "4200000000000000"
+		message["join_eui"] = "4200000000000000"
+		message["dev_addr"] = "01DA1F15"
+		message["uplink_message"] = uplink_message*/
 }
 
 /*var Event_Messages = "<AppID>/devices/<DevID>/event"
@@ -271,9 +304,9 @@ func uplink_confirm_mqtt(client MQTT.Client, uplink_acks string, correlation_ids
 	message["longitude"] = 6.2345 // Longitude of the device
 	message["altitude"] = 2
 
-	message["device_id"] = "dev1"
+	message["device_id"] = deviceId
 	message["application_id"] = "app1"
-	message["dev_eui"] = "4200000000000000"
+	message["dev_eui"] = deviceId
 	message["join_eui"] = "4200000000000000"
 	message["dev_addr"] = "01DA1F15"
 
@@ -291,18 +324,26 @@ func uplink_confirm_mqtt(client MQTT.Client, uplink_acks string, correlation_ids
 	token := client.Publish(uplink_acks, 0, false, string(messageJson))
 	token.Wait()
 }
-func uplink_Messages_t_up_mqtt(client MQTT.Client, uplink_acks string, uplink_message map[string]interface{}) {
+func uplink_Messages_t_up_mqtt(client MQTT.Client, uplink_acks string, uplink_message UplinkMessage) {
 
-	var message map[string]interface{} = make(map[string]interface{})
+	//var message map[string]interface{} = make(map[string]interface{})
+	var uplink Uplink
+	uplink.Device_id = deviceId
+	uplink.Application_id = "app1"
+	uplink.Dev_addr = "01DA1F15"
+	uplink.Dev_eui = deviceId
+	uplink.Join_eui = "4200000000000000"
+	uplink.Uplink_message = uplink_message
 
-	message["device_id"] = "dev1"
-	message["application_id"] = "app1"
-	message["dev_eui"] = "4200000000000000"
-	message["join_eui"] = "4200000000000000"
-	message["dev_addr"] = "01DA1F15"
-	message["uplink_message"] = uplink_message
-	fmt.Printf("发送了上传信息 \n")
-	messageJson, _ := json.Marshal(message)
+	/*	message["device_id"] = "dev1"
+		message["application_id"] = "app1"
+		message["dev_eui"] = "4200000000000000"
+		message["join_eui"] = "4200000000000000"
+		message["dev_addr"] = "01DA1F15"
+		message["uplink_message"] = uplink_message*/
+
+	messageJson, _ := json.Marshal(uplink)
+	fmt.Printf("uplink_Messages_t_up_mqtt 发送了上传信息 %s \n", string(messageJson))
 
 	//text := fmt.Sprintf("this is result msg #%d!", knt)
 	knt++

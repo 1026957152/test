@@ -8,9 +8,9 @@ import (
 	"github.com/sigurn/crc16"
 	"io"
 	"log"
-	"mqtt"
 	"strconv"
 	"strings"
+	//"test/src/mqtt"
 
 	"encoding/gob"
 )
@@ -121,7 +121,7 @@ func read(s io.ReadWriteCloser, uplink_Messages_t_up_topic string) {
 			uplink_message["uplink_token"] = "CiIKIAoUZXVpLTAyNDIwMjAwMDAyNDc4MDMSCAJCAgAAJHgDEMj49+ME"
 			uplink_message["pay_load"] = data
 
-			fmt.Printf("------------------ TEST %s", mqtt.Client)
+			//	fmt.Printf("------------------ TEST %s", mqtt.Client)
 		}
 
 	}
@@ -145,6 +145,7 @@ func read(s io.ReadWriteCloser, uplink_Messages_t_up_topic string) {
 	}
 
 }
+
 func read__(date []byte) {
 
 	r := bytes.NewReader(date)

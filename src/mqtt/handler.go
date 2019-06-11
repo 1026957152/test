@@ -31,7 +31,7 @@ var SubscribeHandler MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Mes
 	//var m map[string]interface{}
 	json.Unmarshal(msg.Payload(), &downlink)
 
-	var message DownlinkMessage
+	var message DownlinkMessageCommand
 	json.Unmarshal([]byte(downlink.Downlinks.Pay_load), &message)
 
 	fmt.Printf("MSG: %s\n", message)
@@ -71,7 +71,9 @@ var SubscribeHandler MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Mes
 		execC.Chrome_off()
 	}
 
-	command_update(client, message)
+	command_update(client, downlink.Downlinks.Session_key_id, message)
+	command_rfid(client, downlink.Downlinks.Session_key_id, message)
+	command_image(client, downlink.Downlinks.Session_key_id, message)
 
 	/*	token := client.Publish("nn/result", 0, false, text)
 		token.Wait()*/
