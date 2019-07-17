@@ -1,0 +1,43 @@
+{
+  "FixedFileInfo": {
+    "FileVersion": {
+      "Major": 1,
+      "Minor": 0,
+      "Patch": 0,
+      "Build": 0
+    },
+    "ProductVersion": {
+      "Major": 1,
+      "Minor": 0,
+      "Patch": 0,
+      "Build": 0
+    },
+    "FileFlagsMask": "3f",
+    "FileFlags ": "00",
+    "FileOS": "040004",
+    "FileType": "01",
+    "FileSubType": "00"
+  },
+  "StringFileInfo": {
+    "Comments": "66666666666",
+    "CompanyName": "666666666",
+    "FileDescription": "6666666",
+    "FileVersion": "4444444",
+    "InternalName": "444444",
+    "LegalCopyright": "4444444",
+    "LegalTrademarks": "444444",
+    "OriginalFilename": "444444",
+    "PrivateBuild": "444444",
+    "ProductName": "44444",
+    "ProductVersion": "v1.0.0.0",
+    "SpecialBuild": "444444444"
+  },
+  "VarFileInfo": {
+    "Translation": {
+      "LangID": "0409",
+      "CharsetID": "04B0"
+    }
+  },
+  "IconPath": "icon.ico",
+  "ManifestPath": "goversioninfo.exe.manifest"
+}

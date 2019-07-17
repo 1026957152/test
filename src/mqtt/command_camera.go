@@ -5,8 +5,7 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"strings"
 	"test/src/serial"
-
-	"encoding/hex"
+	//"encoding/hex"
 )
 
 func command_image(client MQTT.Client, session_key_id string, message DownlinkMessageCommand) {
@@ -35,8 +34,8 @@ func command_image(client MQTT.Client, session_key_id string, message DownlinkMe
 
 				uplinkMessage.Session_key_id = session_key_id
 				uplinkMessage.Uplink_token = "CiIKIAoUZXVpLTAyNDIwMjAwMDAyNDc4MDMSCAJCAgAAJHgDEMj49+ME"
-				encodedStr := hex.EncodeToString(cf)
-				uplinkMessage.Pay_load = encodedStr // string(cf)
+				//encodedStr := hex.EncodeToString(cf)
+				//	uplinkMessage.Pay_load = encodedStr // string(cf)
 				//uplink_message[""] = cf
 				uplink_Messages_t_up_mqtt(client, uplink_Messages_t_up_topic, uplinkMessage) //an acknowledgement of a confirmed downlink
 

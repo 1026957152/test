@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JW Player</title>
+    <script src="jwplayer.js"></script>
+    <script>jwplayer.key = "3E3dvmGjxHsjxP7IuKfjiY0I6wUtnTM/TCnH7A==";</script>
+</head>
+<body>
+<div id="player"></div>
+
+<script>
+    jwplayer("player").setup({
+        sources: [{
+            file: "rtmp://192.168.2.170:1935/vod/mp4:sample.mp4"
+        }],
+        height: 360,
+        width: 640
+    });
+</script>
+
+</body>
+</html>

@@ -1,206 +1,107 @@
 package main
 
+/*
+#cgo CFLAGS: -I.
+
+
+#cgo windows LDFLAGS: -lvideo
+#cgo windows CFLAGS: -DWINDOWS
+#cgo linux LDFLAGS: -lexample
+#cgo LDFLAGS: -L"${SRCDIR}"
+#cgo CFLAGS: -I"${SRCDIR}"
+
+#include "video.h"
+*/
+import "C"
+import "fmt"
 import (
-	"bytes"
-	"errors"
-	"flag"
-	"fmt"
-	"os"
-	"test/src/config"
-	"test/src/execC"
-	"test/src/mqtt"
-	"test/src/serial"
-	"test/src/update"
-	"test/src/web"
-	"text/template"
-	//"test"
-	/*	"qrcode"
-		"strings"*/
-	/*	"fmt"
-		"io"
-		"net/http"
-		"os"*/
-	"log"
-	//"mqtt"
-	"net"
-	"sync"
+	"test/src/drivers"
+	"test/src/drivers/com"
+	"test/src/hikvision"
+	"test/src/platforms/hik2"
+	"test/src/platforms/rfid"
+	"test/src/platforms/serial"
+	"time"
 )
 
-const letter = `
-Dear {{.Name}},
-{{if .Attended}}
-It was a pleasure to see you at the wedding.
-{{- else}}
-It is a shame you couldn't make it to the wedding.
-{{- end}}
-{{with .Gift -}}
-Thank you for the lovely {{.}}.
-{{end}}
-Best wishes,
-Josie
-`
-
-var ERR_EOF = errors.New("EOF")
-var ERR_CLOSED_PIPE = errors.New("io: read/write on closed pipe")
-var ERR_NO_PROGRESS = errors.New("multiple Read calls return no data or error")
-var ERR_SHORT_BUFFER = errors.New("short buffer")
-var ERR_SHORT_WRITE = errors.New("short write")
-var ERR_UNEXPECTED_EOF = errors.New("unexpected EOF")
-
-// getMacAddr gets the MAC hardware
-// address of the host machine
-func getMacAddr() (addr string) {
-	interfaces, err := net.Interfaces()
-	if err == nil {
-		for _, i := range interfaces {
-			log.Printf("读取窗口信息%v  %s  %s", i.Flags, i.Name, i.HardwareAddr.String())
-
-			if i.Flags&net.FlagUp != 0 && bytes.Compare(i.HardwareAddr, nil) != 0 {
-				// Don't use random as we have a real address
-				addr = i.HardwareAddr.String()
-				//break
-			}
-		}
-	}
-	return
-}
-
-/*
-func (self *AgentContext) CheckHostType(host_type string) error {
-    switch host_type {
-    case "virtual_machine":
-        return nil
-    case "bare_metal":
-        return nil
-    }
-    return errors.New("CheckHostType ERROR:" + host_type)
-}*/
-
-var Wg sync.WaitGroup
-var status = make(map[string]string) // map[string]string = {"macAddr",nil}
-
-var Input_pstrName = flag.String("name", "gerry", "input ur name")
-var Input_piAge = flag.Int("age", 20, "input ur age")
-var Input_flagvar int
-
-func Init() {
-	flag.IntVar(&Input_flagvar, "flagname", 1234, "help message for flagname")
+func foo() {
+	handle := C.dlopen(C.CString("libfoo.so"), C.RTLD_LAZY)
+	bar := C.dlsym(handle, C.CString("bar"))
+	fmt.Printf("bar is at %p\n", bar)
 }
 
 func main() {
 
-	// Prepare some data to insert into the template.
-	type Recipient struct {
-		Name, Gift string
-		Attended   bool
-	}
-	var recipients = []Recipient{
-		{"Aunt Mildred", "bone china tea set", true},
-		{"Uncle John", "moleskin pants", false},
-		{"Cousin Rodney", "", false},
-	}
+	// 调用动态库函数fun1
+	cmd := C.CString("ffmpeg -i ./xxx/*.png ./xxx/yyy.mp4")
+	C.exeFFmpegCmd(&cmd)
+	/*	// 调用动态库函数fun2
+		C.fun2(C.int(4))
+		// 调用动态库函数fun3
+		var pointer unsafe.Pointer
+		ret := C.fun3(&pointer)
+		fmt.Println(int(ret))*/
 
-	// Create a new template and parse the letter into it.
-	t := template.Must(template.New("letter").Parse(letter))
-
-	// Execute the template for each recipient.
-	for _, r := range recipients {
-		err := t.Execute(os.Stdout, r)
-		if err != nil {
-			log.Println("executing template:", err)
-		}
+	//C.puts(C.CString("你好，Cgo\n"))
+	//C.SayHello(C.CString("你好，Cgo\n"))
+	if true {
+		return
 	}
 
-	Init()
-	flag.Parse()
-	fmt.Println("name=", *Input_pstrName)
-	fmt.Println("age=", *Input_piAge)
-	fmt.Println("flagname=", Input_flagvar)
+	firmataAdaptor := hik2.NewAdaptor("/dev/ttyACM0", "admin", "admin", 8000)
+	led := hik.NewLedDriver(firmataAdaptor, "13")
 
-	if *Input_pstrName == "install" {
-		execC.Service(" ")
-	}
-	if *Input_pstrName == "aa" {
-
-		var fileName = "e:\\docker-compose.yml"
-
-		content, err := update.Install(fileName, "https://raw.githubusercontent.com/1026957152/test/master/src/docker-compose.yml")
-		if err == nil {
-			log.Printf("out, err := os.Create(filepath)" + content)
-
-			templ := template.Must(template.New("compose").Parse(content))
-			fmt.Println(templ.Name())
-
-			// Create the file
-			out, err := os.Create("e:\\docker-compose.yml__")
-			if err != nil {
-				panic(err)
-			}
-			log.Printf("out, err := os.Create(filepath)")
-			defer out.Close()
-			templ.Execute(os.Stdout, "Hello World")
-			//templ, er :=template.ParseFiles(fileName)
-			//	if er == nil {
-			//	tt := template.Must(templ.Parse(letter))
-
-			//	}
-			execC.DockerCompose(fileName)
-		}
-
+	work := func() {
+		hikvision.Every(1*time.Second, func() {
+			led.Toggle()
+		})
 	}
 
-	/*	fyne.Fyncmain()
-		return*/
-	log.Printf("os.Create(filepath) docker")
+	robot := hikvision.NewRobot("bot",
+		[]hikvision.Connection{firmataAdaptor},
+		[]hikvision.Device{led},
+		work,
+	)
 
-	//update.DownloadFile_("e:\\a.txt","https://raw.githubusercontent.com/idreamsi/RadioHead/master/LICENSE")
-	//	return
+	robot.Start()
+}
 
-	macAddr := config.GetMacAddr()
+func main() {
 
-	status["macAddr"] = macAddr
-	status["deviceEui"] = macAddr + "ff"
+	firmataAdaptor := rfid.NewAdaptor("/dev/ttyACM0", "admin", "admin", 8000)
+	led := com.NewRfidDriver(firmataAdaptor, "13")
 
-	status["broker"] = "tcp://192.168.10.90:1883" // "tcp://mqtt.yulinmei.cn:1883"
-	status["clientId"] = "storage_space_client_id" + macAddr + "ff"
+	work := func() {
+		hikvision.Every(1*time.Second, func() {
+			led.Toggle()
+		})
+	}
 
-	//    os.Exit(-1)
-	/*   web.Webserver()
+	robot := hikvision.NewRobot("bot",
+		[]hikvision.Connection{firmataAdaptor},
+		[]hikvision.Device{led},
+		work,
+	)
 
-	     docker.CreateNewContainer("")
+	robot.Start()
+}
 
+func mainZte() {
 
+	firmataAdaptor := serial.NewAdaptor("/dev/ttyACM0", "admin", "admin", 8000)
+	led := com.NewZteDriver(firmataAdaptor, "13")
 
-	    gpio.Start()*/
-	_, cf := config.Open_config()
-	//	imageName := "docker.yulinmei.cn/loan:0.0.1-SNAPSHOT"
+	work := func() {
+		hikvision.Every(1*time.Second, func() {
+			led.Toggle()
+		})
+	}
 
-	///docker.NewClient(cf.UpdateUrl) //"docker.io/library/alpine")
+	robot := hikvision.NewRobot("bot",
+		[]hikvision.Connection{firmataAdaptor},
+		[]hikvision.Device{led},
+		work,
+	)
 
-	go web.Webserver(&Wg, status)
-
-	mqtt.New_mqtt(cf.AppID, status, cf.Server)
-
-	serial.Init(nil)
-	//	mqtt.Mqtt_local(status)
-
-	//	camera.ImageMain()
-
-	//	r := strings.NewReplacer("<DevID>", status["deviceEui"], "<AppID>", cf.AppID)
-	//qrcode.Qrcode_main(cf.Usbserial, r.Replace(mqtt.Uplink_Messages_t_up))
-
-	//	return
-
-	//serial.Seral_up_network(cfg)
-
-	/*    var char string = "gb18030"
-	      if mahonia.GetCharset(char) == nil {
-
-	          fmt.Errorf("%s charset not suported \n", char)
-	      }else{
-	          fmt.Printf("%s charset  suported \n", char)
-
-	      }*/
-	Wg.Wait()
-
+	robot.Start()
 }

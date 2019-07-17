@@ -154,7 +154,7 @@ func r(s io.ReadWriteCloser, uplink_Messages_t_up_topic string) {
 
 }
 
-func Qrcode_main(usbserial string, uplink_Messages_t_up_topic string) {
+func Qrcode_main(usbserial string, uplink_Messages_t_up_topic string) (name string, err error) {
 	fmt.Printf("打开串口：%s \n")
 
 	//	file, _ := os.Getwd()

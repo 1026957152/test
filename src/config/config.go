@@ -32,6 +32,8 @@ type Configuration struct {
 	Uate      uint8
 	Mine      [3]byte
 	Too       uint16
+
+	COM_4G string
 }
 
 // getMacAddr gets the MAC hardware

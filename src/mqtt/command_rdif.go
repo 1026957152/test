@@ -1,6 +1,7 @@
 package mqtt
 
 import (
+	"encoding/json"
 	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"strings"
@@ -33,10 +34,22 @@ func command_rfid(client MQTT.Client, session_key_id string, message DownlinkMes
 
 				var uplinkMessage UplinkMessage
 
-				uplinkMessage.Session_key_id = session_key_id
+				//	uplinkMessage.Session_key_id = session_key_id
 				uplinkMessage.Uplink_token = "CiIKIAoUZXVpLTAyNDIwMjAwMDAyNDc4MDMSCAJCAgAAJHgDEMj49+ME"
-				encodedStr := hex.EncodeToString(cf)
-				uplinkMessage.Pay_load = encodedStr // string(cf)
+
+				mList := make([]string, len(cf))
+				fmt.Printf("----------- epc_ids_ %x", cf)
+
+				for i, v := range cf {
+					encodedStr := hex.EncodeToString(v)
+					mList[i] = encodedStr
+					//		uplinkMessage.Pay_load = encodedStr // string(cf)
+					fmt.Printf("----------- epc_ids_ %x", encodedStr)
+
+				}
+				jsonInfo, _ := json.Marshal(mList)
+				uplinkMessage.Pay_load = string(jsonInfo) // string(cf)
+				uplinkMessage.Fun = "rfid"
 				//uplink_message[""] = cf
 				uplink_Messages_t_up_mqtt(client, uplink_Messages_t_up_topic, uplinkMessage) //an acknowledgement of a confirmed downlink
 

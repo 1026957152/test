@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
+	"test/src/serial"
+
 	//"gopkg.in/matryer/try.v1"
 	"log"
 	//	"log"
@@ -53,6 +55,7 @@ type UplinkMessage struct {
 	Confirmed       bool     `json:"confirmed"`
 	Correlation_ids []string `json:"correlation_ids"`
 	Uplink_token    string   `json:"uplink_token"`
+	Fun             string   `json:"fun"`
 }
 type Uplink struct {
 	Uplink_message UplinkMessage `json:"uplink_message"`
@@ -61,13 +64,6 @@ type Uplink struct {
 	Dev_eui        string        `json:"dev_eui"`
 	Join_eui       string        `json:"join_eui"`
 	Dev_addr       string        `json:"dev_addr"`
-
-	/*	message["device_id"] = "dev1"
-		message["application_id"] = "app1"
-		message["dev_eui"] = "4200000000000000"
-		message["join_eui"] = "4200000000000000"
-		message["dev_addr"] = "01DA1F15"
-		message["uplink_message"] = uplink_message*/
 }
 
 /*var Event_Messages = "<AppID>/devices/<DevID>/event"
@@ -196,78 +192,6 @@ func New_mqtt(appID string, status map[string]string, server string) {
 		fmt.Println(token.Error())
 		os.Exit(1)
 	}
-
-	//Uplink Messages
-	/*	tokenPub := c.Publish(r.Replace("<AppID>/devices/<DevID>/up"), 0, false, "aaaaaaaaaaaa")
-		tokenPub.Wait()*/
-	//Uplink Messages
-
-	/*	ticker := time.NewTicker(10 * time.Second)
-		quit := make(chan struct{})
-		go func() {
-			for {
-				select {
-				case <-ticker.C:
-					// do stuff
-					rt = r.Replace(Uplink_Messages_t_up)
-					log.Printf("%s", rt)
-
-					log.Printf("发送信息 %s", rt)
-					var message map[string]interface{} = make(map[string]interface{})
-
-					message["is_retry"] = false // Is set to true if this message is a retry (you could also detect this from the counter)
-					message["confirmed"] = true
-
-					message["latitude"] = 52.2345 //// Latitude of the device
-					message["longitude"] = 6.2345  // Longitude of the device
-					message["altitude"] = 2
-
-					message["device_id"] = "dev1"
-					message["application_id"] = "app1"
-					message["dev_eui"] = "4200000000000000"
-					message["join_eui"] = "4200000000000000"
-					message["dev_addr"] = "01DA1F15"
-
-
-					var uplink_message map[string]interface{} = make(map[string]interface{})
-					message["uplink_message"] = uplink_message
-					uplink_message["session_key_id"] = "AWiZpAyXrAfEkUNkBljRoA=="
-					uplink_message["uplink_token"] = "CiIKIAoUZXVpLTAyNDIwMjAwMDAyNDc4MDMSCAJCAgAAJHgDEMj49+ME"
-
-				/*	"uplink_message": {
-					"session_key_id": "AWiZpAyXrAfEkUNkBljRoA==",
-						"f_port": 15,
-						"frm_payload": "VGVtcGVyYXR1cmUgPSAwLjA=",
-						"rx_metadata": [{
-						"gateway_ids": {
-							"gateway_id": "eui-0242020000247803",
-							"eui": "0242020000247803"
-						},
-						"time": "2019-01-29T13:02:34.981Z",
-						"timestamp": 1283325000,
-						"rssi": -35,
-						"snr": 5,
-						"uplink_token": "CiIKIAoUZXVpLTAyNDIwMjAwMDAyNDc4MDMSCAJCAgAAJHgDEMj49+ME"
-					}],
-
-
-
-					messageJson, _ := json.Marshal(message)
-
-					tokenPub := c.Publish(r.Replace(rt), 0, false, string(messageJson))
-					tokenPub.Wait()
-					log.Printf("完成发送信息 %s", rt)
-
-				case <-quit:
-					ticker.Stop()
-					return
-				}
-			}
-		}()
-	*/
-	//
-	/*    tokenPub := c.Publish("<AppID>/devices/<DevID>/events/activations", 0, false, "aaaaaaaaaaaa")
-	      tokenPub.Wait()*/
 
 	log.Printf(" 结束mqtt 初始化")
 
@@ -406,6 +330,73 @@ func Uplink_Messages_t_up_Image_mqtt(uplink_message []byte) {
 	token.Wait()
 
 }
+func Uplink_Messages_t_up_mqtt_StartupInfo(status []serial.Peripheral) {
+
+	//var message map[string]interface{} = make(map[string]interface{})
+	var uplink Uplink
+	uplink.Device_id = deviceId
+	uplink.Application_id = "app1"
+	uplink.Dev_addr = "01DA1F15"
+	uplink.Dev_eui = deviceId
+	uplink.Join_eui = "4200000000000000"
+
+	var uplink_message UplinkMessage
+	uplink_message.Fun = "start"
+	//uplink_message.Session_key_id = "A"
+	uplink_message.Uplink_token = "CiIKIAoUZXVpLTAyNDIwMjAwMDAyNDc4MDMSCAJCAgAAJHgDEMj49+ME"
+	var message map[string]interface{} = make(map[string]interface{})
+
+	message["is_retry"] = false // Is set to true if this message is a retry (you could also detect this from the counter)
+	message["confirmed"] = true
+
+	message["latitude"] = 52.2345 //// Latitude of the device
+	message["longitude"] = 6.2345 // Longitude of the device
+	message["altitude"] = 2
+
+	message["device_id"] = "dev1"
+	message["application_id"] = "app1"
+	message["dev_eui"] = "4200000000000000"
+	message["join_eui"] = "4200000000000000"
+	message["dev_addr"] = "01DA1F15"
+
+	message["peripheral"] = status
+
+	messageJson, _ := json.Marshal(message)
+	fmt.Printf("make(map[string]interface{}) %s \n", string(messageJson))
+	uplink_message.Pay_load = string(messageJson)
+
+	uplink.Uplink_message = uplink_message
+
+	fmt.Printf("make(map[string]interface{}) %v \n", uplink)
+
+	uplink_messageJson, _ := json.Marshal(uplink)
+	fmt.Printf("uplink_Messages_t_up_mqtt 发送了上传信息 %s \n", string(uplink_messageJson))
+
+	r := strings.NewReplacer("<DevID>", deviceId, "<AppID>", appId)
+	link_topic := r.Replace(Uplink_Messages_t_up)
+	token := Client.Publish(link_topic, 0, false, string(uplink_messageJson))
+	token.Wait()
+}
+func Publish_Uplink_Messages_t_up_mqtt(uplink_message UplinkMessage) {
+
+	//var message map[string]interface{} = make(map[string]interface{})
+	var uplink Uplink
+	uplink.Device_id = deviceId
+	uplink.Application_id = "app1"
+	uplink.Dev_addr = "01DA1F15"
+	uplink.Dev_eui = deviceId
+	uplink.Join_eui = "4200000000000000"
+
+	uplink.Uplink_message = uplink_message
+
+	uplink_messageJson, _ := json.Marshal(uplink)
+	fmt.Printf("uplink_Messages_t_up_mqtt 发送了上传信息 %s \n", string(uplink_messageJson))
+
+	r := strings.NewReplacer("<DevID>", deviceId, "<AppID>", appId)
+	link_topic := r.Replace(Uplink_Messages_t_up)
+	token := Client.Publish(link_topic, 0, false, string(uplink_messageJson))
+	token.Wait()
+}
 
 /*				"uplink_message": {
 				"session_key_id": "AWiZpAyXrAfEkUNkBljRoA==",
@@ -423,3 +414,75 @@ func Uplink_Messages_t_up_Image_mqtt(uplink_message []byte) {
 					"uplink_token": "CiIKIAoUZXVpLTAyNDIwMjAwMDAyNDc4MDMSCAJCAgAAJHgDEMj49+ME"
 				}],
 */
+
+//Uplink Messages
+/*	tokenPub := c.Publish(r.Replace("<AppID>/devices/<DevID>/up"), 0, false, "aaaaaaaaaaaa")
+	tokenPub.Wait()*/
+//Uplink Messages
+
+/*	ticker := time.NewTicker(10 * time.Second)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				// do stuff
+				rt = r.Replace(Uplink_Messages_t_up)
+				log.Printf("%s", rt)
+
+				log.Printf("发送信息 %s", rt)
+				var message map[string]interface{} = make(map[string]interface{})
+
+				message["is_retry"] = false // Is set to true if this message is a retry (you could also detect this from the counter)
+				message["confirmed"] = true
+
+				message["latitude"] = 52.2345 //// Latitude of the device
+				message["longitude"] = 6.2345  // Longitude of the device
+				message["altitude"] = 2
+
+				message["device_id"] = "dev1"
+				message["application_id"] = "app1"
+				message["dev_eui"] = "4200000000000000"
+				message["join_eui"] = "4200000000000000"
+				message["dev_addr"] = "01DA1F15"
+
+
+				var uplink_message map[string]interface{} = make(map[string]interface{})
+				message["uplink_message"] = uplink_message
+				uplink_message["session_key_id"] = "AWiZpAyXrAfEkUNkBljRoA=="
+				uplink_message["uplink_token"] = "CiIKIAoUZXVpLTAyNDIwMjAwMDAyNDc4MDMSCAJCAgAAJHgDEMj49+ME"
+
+			/*	"uplink_message": {
+				"session_key_id": "AWiZpAyXrAfEkUNkBljRoA==",
+					"f_port": 15,
+					"frm_payload": "VGVtcGVyYXR1cmUgPSAwLjA=",
+					"rx_metadata": [{
+					"gateway_ids": {
+						"gateway_id": "eui-0242020000247803",
+						"eui": "0242020000247803"
+					},
+					"time": "2019-01-29T13:02:34.981Z",
+					"timestamp": 1283325000,
+					"rssi": -35,
+					"snr": 5,
+					"uplink_token": "CiIKIAoUZXVpLTAyNDIwMjAwMDAyNDc4MDMSCAJCAgAAJHgDEMj49+ME"
+				}],
+
+
+
+				messageJson, _ := json.Marshal(message)
+
+				tokenPub := c.Publish(r.Replace(rt), 0, false, string(messageJson))
+				tokenPub.Wait()
+				log.Printf("完成发送信息 %s", rt)
+
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
+*/
+//
+/*    tokenPub := c.Publish("<AppID>/devices/<DevID>/events/activations", 0, false, "aaaaaaaaaaaa")
+      tokenPub.Wait()*/
