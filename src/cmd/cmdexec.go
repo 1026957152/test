@@ -327,10 +327,12 @@ func DataMasking(s string) (r string) {
 func main() {
 
 	app := iris.Default()
-	app.RegisterView(iris.HTML("E:/go/src/test/src/cmd/views", ".html").Reload(true))
+	//app.RegisterView(iris.HTML("E:/go/src/test/src/cmd/views", ".html").Reload(true))
+	app.RegisterView(iris.HTML("./views", ".html").Reload(true))
+
 	//http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("E:/go/src/test/src/cmd/static"))))
 	//	app.StaticEmbedded("/static", "./static", iris.Application.Asset, AssetNames)
-	app.StaticWeb("/static", "E:/go/src/test/src/cmd/static")
+	app.StaticWeb("/static", "./static")
 	//app.Favicon("./web/ico/one.ico")
 	app.HandleMany("GET", "/ /OpenAPI调用说明", func(ctx iris.Context) {
 
