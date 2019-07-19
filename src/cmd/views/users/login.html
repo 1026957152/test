@@ -43,7 +43,7 @@
             <div class="contentSub">
                 <div id="bodyContent">
                     <p><b>本步骤的作用</b>：<br>
-                        获取到Access Token和OpenID后，可通过调用OpenAPI来获取或修改用户个人信息。<br>
+                        获取到Access Token和OpenID后，可通过调用OpenAPI来获取个人账户信息。<br>
                         <b>本步骤在整个流程中的位置</b>：<br>
                        {{/* <img src="http://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/oauth2.0_guid_5.png" alt="oauth2.0_guid_5.png">*/}}
                         准备工作/获取Access Token/调用OpenAPI
@@ -70,20 +70,19 @@
                     </p>
                     <a name="1._.E5.89.8D.E6.8F.90.E8.AF.B4.E6.98.8E" id="1._.E5.89.8D.E6.8F.90.E8.AF.B4.E6.98.8E"></a><h2> <span class="mw-headline">1. 前提说明</span></h2>
                     <p><b>1. 该appid已经开通了该OpenAPI的使用权限。</b>
-                    </p><p>从<a href="/wiki/mobile/API%E5%88%97%E8%A1%A8" title="mobile/API列表">API列表</a>的接口列表中可以看到，有的接口是完全开放的，有的接口则需要提前提交申请，以获取访问权限。
+                    </p>
+
+
+
+
+                    <p>
+
                         <br>
-                        <br>
-                        <b>2. 准备访问的资源是用户授权可访问的。</b>
-                    </p><p>网站调用该OpenAPI读写某个openid（用户）的信息时，必须是该用户已经对你的appid进行了该OpenAPI的授权（例如用户已经设置了相册不对外公开，则网站是无法读取照片信息的）。
-                    </p><p>用户可以进入QQ空间-&gt;设置-&gt;授权管理进行访问权限的设置。
-                    </p><p><br>
-                        <b>3. 已经成功获取到Access Token，并且Access Token在有效期内。</b>
+                        <b>2. 已经成功获取到Access Token，并且Access Token在有效期内。</b>
                         <br><br><br>
                     </p>
                     <a name="2._.E8.B0.83.E7.94.A8OpenAPI.E6.8E.A5.E5.8F.A3" id="2._.E8.B0.83.E7.94.A8OpenAPI.E6.8E.A5.E5.8F.A3"></a><h2> <span class="mw-headline">2. 调用OpenAPI接口</span></h2>
-                    <p>QQ登录提供了用户信息/动态同步/日志/相册/微博等OpenAPI（详见<a href="/wiki/mobile/API%E5%88%97%E8%A1%A8" title="mobile/API列表">API列表</a>），网站需要将请求发送到某个具体的OpenAPI接口，以访问或修改用户数据。<br>
-                        <b>调用所有OpenAPI时，除了各接口私有的参数外，所有OpenAPI都需要传入基于OAuth2.0协议的通用参数：</b><br>
-                    </p>
+
                     <table class="table">
 
                         <tbody>
@@ -115,17 +114,18 @@
 
                         <tr class="h">
                             <td>oauth_consumer_key
-                            </td><td>申请QQ登录成功后，分配给应用的appid
+                            </td><td>申请用户的ID成功后，分配给应用的appid
                             </td></tr>
                         <tr>
                             <td>openid
-                            </td><td>用户的ID，与QQ号码一一对应。<br>
-                                <p>可通过调用https://graph.qq.com/oauth2.0/me?access_token=YOUR_ACCESS_TOKEN 来获取。
-                                </p>
+                            </td><td>用户的ID，通过提交纸质申请批准后，由中心分配给客户的Id<br>
+
                             </td></tr></tbody></table><br>
                     <a name="3._.E7.A4.BA.E4.BE.8B" id="3._.E7.A4.BA.E4.BE.8B"></a><h2> <span class="mw-headline">3. 示例</span></h2>
                     <p>1. 以<a href="/wiki/mobile/get_simple_userinfo" title="mobile/get_simple_userinfo">get_simple_userinfo</a>接口为例：<br>
                         （请将access_token，appid等参数值替换为你自己的）<br>
+
+                         可修改name参数，然后点击查询，返回事例数据 <br>
                     </p>
                     <div class="code">
                         <p>
@@ -198,13 +198,13 @@
                     <div class="code">
 
                         <pre><code id="response"></code></pre>
-           /
+
 
 
                         </textarea>
 
 <p>
-
+    3. 返回数据说明：<br>
     <table class="MsoNormalTable" border="1" cellspacing="0" cellpadding="0" width="709" style="margin-left:-1.7pt;border-collapse:collapse;mso-table-layout-alt:fixed;
  border:none;mso-border-alt:solid windowtext .5pt;mso-yfti-tbllook:1184;
  mso-padding-alt:0cm 5.4pt 0cm 5.4pt;mso-border-insideh:.5pt solid windowtext;

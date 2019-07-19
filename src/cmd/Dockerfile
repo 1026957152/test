@@ -8,4 +8,3 @@ CMD ["/app/main"]
 
 
 
-# docker build --build-arg  http_proxy=http://192.168.10.101:1089 --build-arg https_proxy=http://192.168.10.101:1089 --network=host -t docker.yulinmei.cn/my-go-app .

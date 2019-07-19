@@ -1,4 +1,4 @@
-FROM golang:alpine as builder
+FROM golang:latest as builder
 RUN mkdir /build
 ADD . /build/
 WORKDIR /build
@@ -15,3 +15,10 @@ CMD ["./main"]
 #docker build -t hellocloudreachmain:1.1 . -f Dockerfile.multi
 #... (build output omitted)
 #docker images | grep hellocloudreachmain
+
+docker build \
+--build-arg  http_proxy=http://192.168.10.101:1089 \
+--build-arg https_proxy=http://192.168.10.101:1089 \
+--network=host \
+-f Dockerfile.multi \
+-t docker.yulinmei.cn/my-go-app .
