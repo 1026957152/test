@@ -1,0 +1,31 @@
+version: '3.2'
+
+services:
+#  database:
+#    image: mariadb
+#    restart: always
+#    volumes:
+#      - ./.data/sql:/var/lib/mysql
+
+  web:
+    build:
+      dockerfile: Dockerfile.multi
+#      context: ./web
+      args:
+        - https_proxy=http://192.168.10.101:1089
+        - http_proxy=http://192.168.10.101:1089
+    image: docker.yulinmei.cn/openapi:latest
+    ports:
+      - 8080:8080
+    network_mode: host
+
+#    depends_on:
+#      - database
+
+
+#  docker build \
+#  --build-arg  http_proxy=http://192.168.10.101:1089 \
+#  --build-arg https_proxy=http://192.168.10.101:1089 \
+#  --network=host \
+#  -f Dockerfile.multi \
+#  -t docker.yulinmei.cn/my-go-app .

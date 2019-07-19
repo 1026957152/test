@@ -8,7 +8,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main ./...
 FROM alpine:latest AS production
 RUN adduser -S -D -H -h /app appuser
 USER appuser
-COPY --from=builder /build/main /app/
+COPY --from=builder /build/ /app/
 WORKDIR /app
 CMD ["./main"]
 
@@ -16,9 +16,4 @@ CMD ["./main"]
 #... (build output omitted)
 #docker images | grep hellocloudreachmain
 
-docker build \
---build-arg  http_proxy=http://192.168.10.101:1089 \
---build-arg https_proxy=http://192.168.10.101:1089 \
---network=host \
--f Dockerfile.multi \
--t docker.yulinmei.cn/my-go-app .
+
